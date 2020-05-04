@@ -2,9 +2,12 @@ package com.softartdev.conwaysgameoflife;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -28,21 +31,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button buttonFAQ = findViewById(R.id.buttonFAQ);
-        final Button buttonStart = findViewById(R.id.buttonStart);
+        Button buttonStart = findViewById(R.id.buttonStart);
         Button buttonStep = findViewById(R.id.buttonStep);
         Button buttonRandom = findViewById(R.id.buttonRandom);
         Button buttonClean = findViewById(R.id.buttonClean);
-        buttonFAQ.setOnClickListener(view -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            builder.setTitle(getString(R.string.rulesTitle))
-                    .setMessage(getString(R.string.rules))
-                    .setCancelable(false)
-                    .setNegativeButton(getString(R.string.ok),
-                            (dialog, id) -> dialog.cancel());
-            AlertDialog alert = builder.create();
-            alert.show();
-        });
         for (int y = 0; y < LIFE_SIZE; y++) {
             for (int x = 0; x < LIFE_SIZE; x++) {
                 String cellId = "x" + x + "y" + y;
@@ -144,4 +136,21 @@ public class MainActivity extends AppCompatActivity {
         countGeneration++;
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_rules) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.rules_title)
+                    .setMessage(R.string.rules_text)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
+            return true;
+        } else return super.onOptionsItemSelected(item);
+    }
 }
