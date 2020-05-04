@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,7 +21,7 @@ import static com.softartdev.conwaysgameoflife.model.CellState.LIFE_SIZE;
 public class MainActivity extends AppCompatActivity {
 
     private TextView stepsTextView;
-    private ImageView[][] cellView = new ImageView[LIFE_SIZE][LIFE_SIZE];
+    private CellView[][] cellView = new CellView[LIFE_SIZE][LIFE_SIZE];
 
     private CellState cellState;
 
@@ -81,8 +80,7 @@ public class MainActivity extends AppCompatActivity {
     private void repaint(boolean[][] generation) {
         for (int x = 0; x < LIFE_SIZE; x++) {
             for (int y = 0; y < LIFE_SIZE; y++) {
-                int color = generation[x][y] ? android.R.color.black : android.R.color.white;
-                cellView[x][y].setImageResource(color);
+                cellView[x][y].setLive(generation[x][y]);
             }
         }
         String steps = getString(R.string.steps, cellState.getCountGeneration());
