@@ -29,8 +29,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button buttonSave = findViewById(R.id.buttonSave);
-        Button buttonLoad = findViewById(R.id.buttonLoad);
         Button buttonFAQ = findViewById(R.id.buttonFAQ);
         final Button buttonStart = findViewById(R.id.buttonStart);
         Button buttonStep = findViewById(R.id.buttonStep);
@@ -46,8 +44,6 @@ public class MainActivity extends AppCompatActivity {
             AlertDialog alert = builder.create();
             alert.show();
         });
-        buttonSave.setVisibility(View.INVISIBLE);
-        buttonLoad.setVisibility(View.INVISIBLE);
         for (int y = 0; y < LIFE_SIZE; y++) {
             for (int x = 0; x < LIFE_SIZE; x++) {
                 String cellId = "x" + x + "y" + y;

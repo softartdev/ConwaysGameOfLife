@@ -21,21 +21,6 @@
             android:orientation="horizontal">
 
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/save"
-                android:id="@+id/buttonSave"/>
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/load"
-                android:id="@+id/buttonLoad"
-                android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/buttonSave"
-                android:layout_toEndOf="@+id/buttonSave"/>
-
-            <Button
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
