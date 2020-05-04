@@ -90,11 +90,8 @@ public class MainActivity extends AppCompatActivity {
     public void repaint(boolean[][] generation) {
         for (int x = 0; x < LIFE_SIZE; x++) {
             for (int y = 0; y < LIFE_SIZE; y++) {
-                if (generation[x][y]) {
-                    cellView[x][y].setImageResource(android.R.color.black);
-                } else {
-                    cellView[x][y].setImageResource(android.R.color.white);
-                }
+                int color = generation[x][y] ? android.R.color.black : android.R.color.white;
+                cellView[x][y].setImageResource(color);
             }
         }
         String steps = getString(R.string.steps, countGeneration);
