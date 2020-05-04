@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -17,7 +18,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
-    final String NAME_OF_GAME = "Conway's Game of Life";
     final int LIFE_SIZE = 10;
     boolean[][] lifeGeneration = new boolean[LIFE_SIZE][LIFE_SIZE];
     boolean[][] nextGeneration = new boolean[LIFE_SIZE][LIFE_SIZE];
@@ -26,15 +26,17 @@ public class MainActivity extends AppCompatActivity {
     int showDelay = 500;
     volatile boolean goNextGeneration = false;
     Random random = new Random();
+    TextView stepsTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button buttonStart = findViewById(R.id.buttonStart);
-        Button buttonStep = findViewById(R.id.buttonStep);
-        Button buttonRandom = findViewById(R.id.buttonRandom);
-        Button buttonClean = findViewById(R.id.buttonClean);
+        stepsTextView = findViewById(R.id.main_steps_text_view);
+        Button buttonStart = findViewById(R.id.main_start_button);
+        Button buttonStep = findViewById(R.id.main_step_button);
+        Button buttonRandom = findViewById(R.id.main_random_button);
+        Button buttonClean = findViewById(R.id.main_clean_button);
         for (int y = 0; y < LIFE_SIZE; y++) {
             for (int x = 0; x < LIFE_SIZE; x++) {
                 String cellId = "x" + x + "y" + y;
@@ -95,7 +97,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-        setTitle(NAME_OF_GAME + " : " + countGeneration);
+        String steps = getString(R.string.steps, countGeneration);
+        stepsTextView.setText(steps);
     }
 
     // count the number of neighbors
