@@ -8,9 +8,10 @@
     <string name="faq">\ ?</string>
     <string name="cell">Cell</string>
     <string name="rulesTitle">Rules</string>
-    <string name="rules"> - Any live cell with fewer than 2 live neighbours dies, as if caused by under-population.
-        - Any live cell with more than 3 live neighbours dies, as if by over-population.
-        - Any live cell with 2 or 3 live neighbours lives on to the next generation.
-        - Any dead cell with exactly 3 live neighbours becomes a live cell, as if by reproduction.</string>
+    <string name="rules">
+        \n- Any live cell with fewer than 2 live neighbours dies, as if caused by under-population.
+        \n- Any live cell with more than 3 live neighbours dies, as if by over-population.
+        \n- Any live cell with 2 or 3 live neighbours lives on to the next generation.
+        \n- Any dead cell with exactly 3 live neighbours becomes a live cell, as if by reproduction.</string>
     <string name="ok">OK</string>
 </resources>
