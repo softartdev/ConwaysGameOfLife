@@ -33,10 +33,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         stepsTextView = findViewById(R.id.main_steps_text_view);
-        Button buttonStart = findViewById(R.id.main_start_button);
-        Button buttonStep = findViewById(R.id.main_step_button);
-        Button buttonRandom = findViewById(R.id.main_random_button);
-        Button buttonClean = findViewById(R.id.main_clean_button);
+        Button startButton = findViewById(R.id.main_start_button);
+        Button stepButton = findViewById(R.id.main_step_button);
+        Button randomButton = findViewById(R.id.main_random_button);
+        Button cleanButton = findViewById(R.id.main_clean_button);
         for (int y = 0; y < LIFE_SIZE; y++) {
             for (int x = 0; x < LIFE_SIZE; x++) {
                 String cellId = "x" + x + "y" + y;
@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         }
-        buttonRandom.setOnClickListener(view -> {
+        randomButton.setOnClickListener(view -> {
             countGeneration = 1;
             for (int x = 0; x < LIFE_SIZE; x++) {
                 for (int y = 0; y < LIFE_SIZE; y++) {
@@ -59,18 +59,18 @@ public class MainActivity extends AppCompatActivity {
             }
             repaint(lifeGeneration);
         });
-        buttonStep.setOnClickListener(view -> {
+        stepButton.setOnClickListener(view -> {
             processOfLife();
             repaint(nextGeneration);
         });
-        buttonClean.setOnClickListener(view -> {
+        cleanButton.setOnClickListener(view -> {
             for (int x = 0; x < LIFE_SIZE; x++) {
                 Arrays.fill(lifeGeneration[x], false);
             }
             repaint(lifeGeneration);
         });
-        buttonStart.setOnClickListener(view -> {
-            buttonStart.setText(goNextGeneration ? getString(R.string.start) : getString(R.string.stop));
+        startButton.setOnClickListener(view -> {
+            startButton.setText(goNextGeneration ? getString(R.string.start) : getString(R.string.stop));
             goNextGeneration = !goNextGeneration;
         });
         final Handler uiHandler = new Handler();
