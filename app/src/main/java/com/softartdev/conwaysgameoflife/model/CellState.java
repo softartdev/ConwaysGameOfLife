@@ -33,6 +33,10 @@ public class CellState {
         }
     }
 
+    public boolean[][] getLifeGeneration() {
+        return lifeGeneration;
+    }
+
     public boolean toggleGoNextGeneration() {
         boolean go = goNextGeneration;
         synchronized (this) {
