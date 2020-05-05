@@ -29,8 +29,9 @@ public class MainActivity extends AppCompatActivity {
         stepsTextView = findViewById(R.id.main_steps_text_view);
         cellLayout = findViewById(R.id.main_cell_layout);
         cellState = CellState.getInstance();
-        cellLayout.setOnCellListener((x, y) -> {
-            boolean[][] inverted = cellState.invertLifeGeneration(x, y);
+        cellLayout.setOnCellClickListener(view -> {
+            CellView cellView = (CellView) view;
+            boolean[][] inverted = cellState.invertLifeGeneration(cellView.getDx(), cellView.getDy());
             repaint(inverted);
         });
         Button startButton = findViewById(R.id.main_start_button);

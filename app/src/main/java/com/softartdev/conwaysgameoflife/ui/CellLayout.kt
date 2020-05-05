@@ -3,39 +3,26 @@ package com.softartdev.conwaysgameoflife.ui
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.GridLayout
-import com.softartdev.conwaysgameoflife.R
+import androidx.core.view.children
 import com.softartdev.conwaysgameoflife.model.CellState.LIFE_SIZE
 
 class CellLayout @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : GridLayout(context, attrs, defStyleAttr) {
 
-    private val cells: Array<Array<CellView>> = Array(LIFE_SIZE) { x ->
-        Array(LIFE_SIZE) cell@{ y ->
-            val cellView = CellView(context).apply {
-                layoutParams = LayoutParams(spec(y), spec(x)).apply {
-                    width = this@CellLayout.resources.getDimensionPixelSize(R.dimen.cell_size)
-                    height = this@CellLayout.resources.getDimensionPixelSize(R.dimen.cell_size)
-                }
-                tag = "x${x}y${y}"
-            }
-            addView(cellView)
-            return@cell cellView
-        }
-    }
-
     init {
         columnCount = LIFE_SIZE
         rowCount = LIFE_SIZE
+        forEachCell { x, y -> addView(CellView(context, x, y)) }
     }
 
-    fun repaint(generation: Array<BooleanArray>) = forEachCell { x, y ->
-        cells[x][y].isLive = generation[x][y]
-    }
+    fun repaint(generation: Array<BooleanArray>) = children
+            .filterIsInstance(CellView::class.java)
+            .forEach { it.isLive = generation[it.dx][it.dy] }
 
-    fun setOnCellListener(cellListener: CellListener) = forEachCell { x, y ->
-        cells[x][y].setOnClickListener { cellListener.onCell(x, y) }
-    }
+    fun setOnCellClickListener(listener: OnClickListener) = children
+            .filterIsInstance(CellView::class.java)
+            .forEach { it.setOnClickListener(listener) }
 
     private inline fun forEachCell(action: (x: Int, y: Int) -> Unit) {
         for (x in 0 until LIFE_SIZE) {
@@ -43,9 +30,5 @@ class CellLayout @JvmOverloads constructor(
                 action(x, y)
             }
         }
-    }
-
-    interface CellListener {
-        fun onCell(x: Int, y: Int)
     }
 }

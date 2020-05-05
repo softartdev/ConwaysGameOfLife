@@ -1,13 +1,17 @@
 package com.softartdev.conwaysgameoflife.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
-import android.util.AttributeSet
 import android.view.View
+import android.widget.GridLayout
 import com.softartdev.conwaysgameoflife.R
 
-class CellView @JvmOverloads constructor(
-        context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : View(context, attrs, defStyleAttr) {
+@SuppressLint("ViewConstructor")
+class CellView(
+        context: Context,
+        val dx: Int,
+        val dy: Int
+) : View(context) {
 
     var isLive: Boolean = false
         set(value) {
@@ -17,6 +21,11 @@ class CellView @JvmOverloads constructor(
         }
 
     init {
+        val cellSize = resources.getDimensionPixelSize(R.dimen.cell_size)
+        layoutParams = GridLayout.LayoutParams(GridLayout.spec(dy), GridLayout.spec(dx)).apply {
+            width = cellSize
+            height = cellSize
+        }
         isLive = false
     }
 }
