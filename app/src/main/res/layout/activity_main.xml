@@ -21,8 +21,8 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             tools:text="@string/steps" />
 
-        <include
-            layout="@layout/button_array"
+        <com.softartdev.conwaysgameoflife.ui.CellLayout
+            android:id="@+id/main_cell_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"/>

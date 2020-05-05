@@ -16,13 +16,10 @@ import com.softartdev.conwaysgameoflife.model.CellState;
 
 import java.util.TimerTask;
 
-import static com.softartdev.conwaysgameoflife.model.CellState.LIFE_SIZE;
-
 public class MainActivity extends AppCompatActivity {
 
     private TextView stepsTextView;
-    private CellView[][] cellView = new CellView[LIFE_SIZE][LIFE_SIZE];
-
+    private CellLayout cellLayout;
     private CellState cellState;
 
     @Override
@@ -30,20 +27,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         stepsTextView = findViewById(R.id.main_steps_text_view);
+        cellLayout = findViewById(R.id.main_cell_layout);
         cellState = CellState.getInstance();
-        for (int y = 0; y < LIFE_SIZE; y++) {
-            for (int x = 0; x < LIFE_SIZE; x++) {
-                String cellId = "x" + x + "y" + y;
-                int resID = getResources().getIdentifier(cellId, "id", "com.softartdev.conwaysgameoflife");
-                cellView[x][y] = findViewById(resID);
-                final int dx = x;
-                final int dy = y;
-                cellView[x][y].setOnClickListener(view -> {
-                    boolean[][] inverted = cellState.invertLifeGeneration(dx, dy);
-                    repaint(inverted);
-                });
-            }
-        }
+        cellLayout.setOnCellListener((x, y) -> {
+            boolean[][] inverted = cellState.invertLifeGeneration(x, y);
+            repaint(inverted);
+        });
         Button startButton = findViewById(R.id.main_start_button);
         startButton.setOnClickListener(view -> {
             boolean toggle = cellState.toggleGoNextGeneration();
@@ -78,13 +67,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void repaint(boolean[][] generation) {
-        for (int x = 0; x < LIFE_SIZE; x++) {
-            for (int y = 0; y < LIFE_SIZE; y++) {
-                cellView[x][y].setLive(generation[x][y]);
-            }
-        }
         String steps = getString(R.string.steps, cellState.getCountGeneration());
         stepsTextView.setText(steps);
+        cellLayout.repaint(generation);
     }
 
     @Override
