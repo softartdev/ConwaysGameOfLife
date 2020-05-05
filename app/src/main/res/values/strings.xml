@@ -5,7 +5,6 @@
     <string name="step">Step</string>
     <string name="random">Randomize</string>
     <string name="clean">Clean</string>
-    <string name="cell">Cell</string>
     <string name="rules_title">Rules</string>
     <string name="rules_text">
         \n- Any live cell with fewer than 2 live neighbours dies, as if caused by under-population.
