@@ -18,13 +18,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        repaint(cellState.lifeGeneration)
         main_cell_layout.setOnCellClickListener { x, y ->
             val inverted = cellState.invertLifeGeneration(x, y)
             repaint(inverted)
         }
+        updateStartButtonText()
         main_start_button.setOnClickListener {
-            val toggle = cellState.toggleGoNextGeneration()
-            main_start_button.text = if (toggle) getString(R.string.start) else getString(R.string.stop)
+            cellState.toggleGoNextGeneration()
+            updateStartButtonText()
         }
         main_step_button.setOnClickListener {
             val processed = cellState.processNextGeneration()
@@ -48,6 +50,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
         cellState.scheduleTimer(timerTask)
+    }
+
+    private fun updateStartButtonText() {
+        val toggle = cellState.isGoNextGeneration
+        main_start_button.text = if (toggle) getString(R.string.stop) else getString(R.string.start)
     }
 
     private fun repaint(generation: Array<BooleanArray>) {
