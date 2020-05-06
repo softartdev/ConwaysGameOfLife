@@ -1,0 +1,31 @@
+name: Android CI
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build_test_publish_job:
+    name: Build-Test-Publish job
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Cache gradle
+        uses: actions/cache@v1
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Decrypt large secret
+        run: ./.github/scripts/decrypt_secret.sh
+        env:
+          LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
+      - name: Build, Test & Upload to Google Play
+        run: bundle exec fastlane build_bundle_publish
+      - name: Archive output artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: output-artifacts
+          path: app/build/outputs/
