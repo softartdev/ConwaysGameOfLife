@@ -46,6 +46,11 @@ fastlane android clean_test_bundle_publish
 fastlane android build_bundle_publish
 ```
 
+### android build_apk_publish
+```
+fastlane android build_apk_publish
+```
+
 
 ----
 

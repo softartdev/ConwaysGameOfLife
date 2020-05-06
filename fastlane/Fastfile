@@ -59,4 +59,12 @@ platform :android do
     )
     upload_to_play_store skip_upload_apk:true
   end
+
+  lane :build_apk_publish do
+    gradle(
+      task: 'build assemble',
+      build_type: 'Release'
+    )
+    upload_to_play_store skip_upload_aab:true
+  end
 end
