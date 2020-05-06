@@ -62,7 +62,7 @@ platform :android do
 
   lane :build_apk_publish do
     gradle(
-      task: 'build assemble',
+      task: 'clean build assemble',
       build_type: 'Release'
     )
     upload_to_play_store skip_upload_aab:true
