@@ -14,6 +14,7 @@ import com.softartdev.conwaysgameoflife.MainService
 import com.softartdev.conwaysgameoflife.R
 import com.softartdev.conwaysgameoflife.model.ICellState
 import kotlinx.android.synthetic.main.activity_main.*
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     private val serviceConnection by lazy { object : ServiceConnection {
         private lateinit var mainService: MainService
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            Timber.d("onServiceConnected")
             val mainBinder = service as? MainService.MainBinder ?: return
             mainService = mainBinder.service
             iCellState = mainService.iCellState
@@ -31,6 +33,7 @@ class MainActivity : AppCompatActivity() {
             bound = true
         }
         override fun onServiceDisconnected(name: ComponentName?) {
+            Timber.d("onServiceDisconnected")
             mainService.uiRepaint = null
             iCellState = null
             bound = false
@@ -66,14 +69,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        bindService(Intent(this, MainService::class.java), serviceConnection, Context.BIND_AUTO_CREATE)
+        if (!bound) {
+            bindService(Intent(this, MainService::class.java), serviceConnection, Context.BIND_AUTO_CREATE)
+        }
     }
 
     override fun onStop() {
         super.onStop()
         if (bound) {
             unbindService(serviceConnection)
-            bound = false
         }
     }
 

@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.IBinder
 import com.softartdev.conwaysgameoflife.model.CellState
 import com.softartdev.conwaysgameoflife.model.ICellState
+import timber.log.Timber
 import java.util.*
 
 class MainService : Service() {
@@ -17,6 +18,7 @@ class MainService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        Timber.d("onCreate")
         val timerTask: TimerTask = object : TimerTask() {
             val uiHandler = Handler()
             override fun run() {
@@ -29,10 +31,14 @@ class MainService : Service() {
         iCellState.scheduleTimer(timerTask)
     }
 
-    override fun onBind(intent: Intent): IBinder = mainBinder
+    override fun onBind(intent: Intent): IBinder {
+        Timber.d("onBind")
+        return mainBinder
+    }
 
     override fun onDestroy() {
         super.onDestroy()
+        Timber.d("onDestroy")
         iCellState.cancelTimer()
     }
 
