@@ -1,5 +1,6 @@
 package com.softartdev.conwaysgameoflife.util
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -11,13 +12,13 @@ import androidx.core.app.NotificationManagerCompat
 import com.softartdev.conwaysgameoflife.R
 import com.softartdev.conwaysgameoflife.ui.MainActivity
 
-private const val NOTIFICATION_ID = 0
+const val NOTIFICATION_ID = 12345678
 
 fun NotificationManagerCompat.createNotificationChannel(
         applicationContext: Context
 ): NotificationChannel? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
     val channelId = applicationContext.getString(R.string.notification_channel_id)
-    getNotificationChannel(channelId) ?: NotificationChannel(
+    NotificationChannel(
             channelId,
             applicationContext.getString(R.string.notification_channel_name),
             NotificationManager.IMPORTANCE_LOW
@@ -26,7 +27,7 @@ fun NotificationManagerCompat.createNotificationChannel(
     }.also(::createNotificationChannel)
 } else null
 
-fun NotificationManagerCompat.sendNotification(messageBody: String, applicationContext: Context) {
+fun createNotification(messageBody: String, applicationContext: Context): Notification {
     val channelId = applicationContext.getString(R.string.notification_channel_id)
     val contentIntent = Intent(applicationContext, MainActivity::class.java)
     val contentPendingIntent = PendingIntent.getActivity(applicationContext, NOTIFICATION_ID, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT)
@@ -37,5 +38,5 @@ fun NotificationManagerCompat.sendNotification(messageBody: String, applicationC
             .setContentIntent(contentPendingIntent)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
-    notify(NOTIFICATION_ID, notificationBuilder.build())
+    return notificationBuilder.build()
 }

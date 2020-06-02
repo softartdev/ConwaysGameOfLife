@@ -78,6 +78,7 @@ class MainActivity : AppCompatActivity() {
         super.onStop()
         if (bound) {
             unbindService(serviceConnection)
+            bound = false
         }
     }
 
