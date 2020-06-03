@@ -38,9 +38,9 @@ class MainService : Service() {
         val timerTask: TimerTask = object : TimerTask() {
             val uiHandler = Handler()
             override fun run() {
+                Timber.d("Process generation step: %s", iCellState.countGeneration)//TODO run only when game beginning
                 if (iCellState.isGoNextGeneration) {
                     val processed = iCellState.processNextGeneration()
-                    Timber.d("Process generation step: %s", iCellState.countGeneration)
                     if (serviceRunningInForeground) {
                         val notification = createNotification(applicationContext, iCellState.countGeneration, notificationBuilder)
                         notificationManager.notify(NOTIFICATION_ID, notification)
@@ -51,6 +51,17 @@ class MainService : Service() {
             }
         }
         iCellState.scheduleTimer(timerTask)
+    }
+
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        Timber.d("onStartCommand")
+        val cancelFromNotification = intent.getBooleanExtra(EXTRA_CANCEL_FROM_NOTIFICATION, false)
+        if (cancelFromNotification) {
+            Timber.d("cancel from notification")
+            iCellState.toggleGoNextGeneration()
+            stopSelf()
+        }
+        return START_NOT_STICKY
     }
 
     override fun onBind(intent: Intent): IBinder {
@@ -68,8 +79,10 @@ class MainService : Service() {
 
     override fun onUnbind(intent: Intent?): Boolean {
         Timber.d("onUnbind")
-        val notification = createNotification(applicationContext, iCellState.countGeneration, notificationBuilder)
-        startForeground(NOTIFICATION_ID, notification)
+        if (iCellState.isGoNextGeneration) {
+            val notification = createNotification(applicationContext, iCellState.countGeneration, notificationBuilder)
+            startForeground(NOTIFICATION_ID, notification)
+        }
         serviceRunningInForeground = true
         return true
     }
@@ -86,6 +99,7 @@ class MainService : Service() {
 
     companion object {
         private const val NOTIFICATION_ID = 12345678
+        private const val EXTRA_CANCEL_FROM_NOTIFICATION = "extra_cancel_from_notification"
 
         private fun createNotificationChannel(
                 applicationContext: Context,
@@ -105,11 +119,17 @@ class MainService : Service() {
         ): NotificationCompat.Builder {
             val channelId = applicationContext.getString(R.string.notification_channel_id)
             val contentIntent = Intent(applicationContext, MainActivity::class.java)
-            val contentPendingIntent = PendingIntent.getActivity(applicationContext, NOTIFICATION_ID, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+            val contentPendingIntent = PendingIntent.getActivity(applicationContext, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+            val cancelIntent = Intent(applicationContext, MainService::class.java)
+                    .putExtra(EXTRA_CANCEL_FROM_NOTIFICATION, true)
+            val cancelPendingIntent = PendingIntent.getService(applicationContext, 0, cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+            val cancelTitle = applicationContext.getString(R.string.stop)
+            val cancelAction = NotificationCompat.Action(android.R.drawable.ic_menu_close_clear_cancel, cancelTitle, cancelPendingIntent)
             return NotificationCompat.Builder(applicationContext, channelId)
                     .setSmallIcon(R.drawable.ic_twotone_grid_on_24)
                     .setContentTitle(applicationContext.getString(R.string.notification_title))
                     .setContentIntent(contentPendingIntent)
+                    .addAction(cancelAction)
                     .setAutoCancel(true)
                     .setPriority(NotificationCompat.PRIORITY_LOW)
         }
