@@ -1,16 +1,17 @@
 package com.softartdev.conwaysgameoflife
 
-import android.app.Service
+import android.app.*
+import android.content.Context
 import android.content.Intent
 import android.os.Binder
+import android.os.Build
 import android.os.Handler
 import android.os.IBinder
+import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.softartdev.conwaysgameoflife.model.CellState
 import com.softartdev.conwaysgameoflife.model.ICellState
-import com.softartdev.conwaysgameoflife.util.NOTIFICATION_ID
-import com.softartdev.conwaysgameoflife.util.createNotification
-import com.softartdev.conwaysgameoflife.util.createNotificationChannel
+import com.softartdev.conwaysgameoflife.ui.MainActivity
 import timber.log.Timber
 import java.util.*
 
@@ -26,11 +27,14 @@ class MainService : Service() {
     private val notificationManager: NotificationManagerCompat by lazy {
         NotificationManagerCompat.from(applicationContext)
     }
+    private val notificationBuilder: NotificationCompat.Builder by lazy {
+        createNotificationBuilder(applicationContext)
+    }
 
     override fun onCreate() {
         super.onCreate()
         Timber.d("onCreate")
-        notificationManager.createNotificationChannel(applicationContext)
+        createNotificationChannel(applicationContext, notificationManager)
         val timerTask: TimerTask = object : TimerTask() {
             val uiHandler = Handler()
             override fun run() {
@@ -38,8 +42,7 @@ class MainService : Service() {
                     val processed = iCellState.processNextGeneration()
                     Timber.d("Process generation step: %s", iCellState.countGeneration)
                     if (serviceRunningInForeground) {
-                        val message = getString(R.string.steps, iCellState.countGeneration)
-                        val notification = createNotification(message, applicationContext)
+                        val notification = createNotification(applicationContext, iCellState.countGeneration, notificationBuilder)
                         notificationManager.notify(NOTIFICATION_ID, notification)
                     } else {
                         uiHandler.post { uiRepaint?.invoke(processed) }
@@ -65,8 +68,7 @@ class MainService : Service() {
 
     override fun onUnbind(intent: Intent?): Boolean {
         Timber.d("onUnbind")
-        val message = getString(R.string.steps, iCellState.countGeneration)
-        val notification = createNotification(message, applicationContext)
+        val notification = createNotification(applicationContext, iCellState.countGeneration, notificationBuilder)
         startForeground(NOTIFICATION_ID, notification)
         serviceRunningInForeground = true
         return true
@@ -80,5 +82,47 @@ class MainService : Service() {
 
     inner class MainBinder : Binder() {
         val service: MainService get() = this@MainService
+    }
+
+    companion object {
+        private const val NOTIFICATION_ID = 12345678
+
+        private fun createNotificationChannel(
+                applicationContext: Context,
+                notificationManager: NotificationManagerCompat
+        ) = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel(
+                    applicationContext.getString(R.string.notification_channel_id),
+                    applicationContext.getString(R.string.notification_channel_name),
+                    NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                setShowBadge(false)
+            }.let(notificationManager::createNotificationChannel)
+        } else Unit
+
+        private fun createNotificationBuilder(
+                applicationContext: Context
+        ): NotificationCompat.Builder {
+            val channelId = applicationContext.getString(R.string.notification_channel_id)
+            val contentIntent = Intent(applicationContext, MainActivity::class.java)
+            val contentPendingIntent = PendingIntent.getActivity(applicationContext, NOTIFICATION_ID, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+            return NotificationCompat.Builder(applicationContext, channelId)
+                    .setSmallIcon(R.mipmap.ic_launcher)//TODO change it
+                    .setContentTitle(applicationContext.getString(R.string.notification_title))
+                    .setContentIntent(contentPendingIntent)
+                    .setAutoCancel(true)
+                    .setPriority(NotificationCompat.PRIORITY_LOW)
+        }
+
+        private fun createNotification(
+                applicationContext: Context,
+                stepCount: Int,
+                notificationBuilder: NotificationCompat.Builder
+        ): Notification {
+            val contentText = applicationContext.getString(R.string.steps, stepCount)
+            return notificationBuilder
+                    .setContentText(contentText)
+                    .build()
+        }
     }
 }
