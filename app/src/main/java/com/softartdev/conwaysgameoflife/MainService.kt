@@ -107,7 +107,7 @@ class MainService : Service() {
             val contentIntent = Intent(applicationContext, MainActivity::class.java)
             val contentPendingIntent = PendingIntent.getActivity(applicationContext, NOTIFICATION_ID, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT)
             return NotificationCompat.Builder(applicationContext, channelId)
-                    .setSmallIcon(R.mipmap.ic_launcher)//TODO change it
+                    .setSmallIcon(R.drawable.ic_twotone_grid_on_24)
                     .setContentTitle(applicationContext.getString(R.string.notification_title))
                     .setContentIntent(contentPendingIntent)
                     .setAutoCancel(true)
