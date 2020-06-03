@@ -1,64 +1,95 @@
 package com.softartdev.conwaysgameoflife.ui
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.Handler
+import android.os.IBinder
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.softartdev.conwaysgameoflife.MainService
 import com.softartdev.conwaysgameoflife.R
-import com.softartdev.conwaysgameoflife.model.CellState
+import com.softartdev.conwaysgameoflife.model.ICellState
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.*
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
-    private val cellState by lazy { CellState.getInstance() }
+    private var iCellState: ICellState? = null
+    private var bound = false
+
+    private val serviceConnection by lazy { object : ServiceConnection {
+        private lateinit var mainService: MainService
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            Timber.d("onServiceConnected")
+            val mainBinder = service as? MainService.MainBinder ?: return
+            mainService = mainBinder.service
+            iCellState = mainService.iCellState
+            updateStartButtonText()
+            mainService.uiRepaint = this@MainActivity::repaint
+            mainService.uiRepaint?.invoke(mainService.iCellState.lifeGeneration)
+            bound = true
+        }
+        override fun onServiceDisconnected(name: ComponentName?) {
+            Timber.d("onServiceDisconnected")
+            mainService.uiRepaint = null
+            iCellState = null
+            bound = false
+        }
+    } }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        repaint(cellState.lifeGeneration)
         main_cell_layout.setOnCellClickListener { x, y ->
-            val inverted = cellState.invertLifeGeneration(x, y)
+            val inverted = iCellState?.invertLifeGeneration(x, y) ?: return@setOnCellClickListener
             repaint(inverted)
         }
         updateStartButtonText()
         main_start_button.setOnClickListener {
-            cellState.toggleGoNextGeneration()
+            iCellState?.toggleGoNextGeneration()
             updateStartButtonText()
         }
         main_step_button.setOnClickListener {
-            val processed = cellState.processNextGeneration()
+            val processed = iCellState?.processNextGeneration() ?: return@setOnClickListener
             repaint(processed)
         }
         main_random_button.setOnClickListener {
-            val randomized = cellState.randomizeLifeGeneration()
+            val randomized = iCellState?.randomizeLifeGeneration() ?: return@setOnClickListener
             repaint(randomized)
         }
         main_clean_button.setOnClickListener {
-            val cleaned = cellState.cleanLifeGeneration()
+            val cleaned = iCellState?.cleanLifeGeneration() ?: return@setOnClickListener
             repaint(cleaned)
         }
-        val uiHandler = Handler()
-        val timerTask: TimerTask = object : TimerTask() {
-            override fun run() {
-                if (cellState.isGoNextGeneration) {
-                    val processed = cellState.processNextGeneration()
-                    uiHandler.post { repaint(processed) }
-                }
-            }
+        startService(Intent(this, MainService::class.java))
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (!bound) {
+            bindService(Intent(this, MainService::class.java), serviceConnection, Context.BIND_AUTO_CREATE)
         }
-        cellState.scheduleTimer(timerTask)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (bound) {
+            unbindService(serviceConnection)
+            bound = false
+        }
     }
 
     private fun updateStartButtonText() {
-        val toggle = cellState.isGoNextGeneration
+        val toggle = iCellState?.isGoNextGeneration ?: return
         main_start_button.text = if (toggle) getString(R.string.stop) else getString(R.string.start)
     }
 
     private fun repaint(generation: Array<BooleanArray>) {
-        main_steps_text_view.text = getString(R.string.steps, cellState.countGeneration)
+        main_steps_text_view.text = getString(R.string.steps, iCellState?.countGeneration)
         main_cell_layout.repaint(generation)
     }
 
@@ -79,8 +110,4 @@ class MainActivity : AppCompatActivity() {
         else -> super.onOptionsItemSelected(item)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        cellState.cancelTimer()
-    }
 }

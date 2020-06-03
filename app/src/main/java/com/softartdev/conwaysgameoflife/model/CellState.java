@@ -5,8 +5,8 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class CellState {
-    private static CellState INSTANCE;
+public class CellState implements ICellState {
+    private static ICellState INSTANCE;
     public static final int LIFE_SIZE = 10;
     private static final int SHOW_DELAY = 500;
     private Timer timer;
@@ -19,6 +19,7 @@ public class CellState {
     private CellState() {
     }
 
+    @Override
     public void scheduleTimer(TimerTask timerTask) {
         if (timer == null) {
             timer = new Timer();
@@ -26,6 +27,7 @@ public class CellState {
         timer.schedule(timerTask, 0L, SHOW_DELAY);
     }
 
+    @Override
     public void cancelTimer() {
         if (timer != null) {
             timer.cancel();
@@ -33,10 +35,12 @@ public class CellState {
         }
     }
 
+    @Override
     public boolean[][] getLifeGeneration() {
         return lifeGeneration;
     }
 
+    @Override
     public boolean toggleGoNextGeneration() {
         boolean go = goNextGeneration;
         synchronized (this) {
@@ -45,6 +49,7 @@ public class CellState {
         return go;
     }
 
+    @Override
     public boolean[][] invertLifeGeneration(int dx, int dy) {
         synchronized(this) {
             lifeGeneration[dx][dy] = !lifeGeneration[dx][dy];
@@ -52,11 +57,13 @@ public class CellState {
         return lifeGeneration;
     }
 
+    @Override
     public boolean[][] processNextGeneration() {
         processOfLife();
         return nextGeneration;
     }
 
+    @Override
     public boolean[][] randomizeLifeGeneration() {
         synchronized (this) {
             countGeneration = 1;
@@ -69,6 +76,7 @@ public class CellState {
         return lifeGeneration;
     }
 
+    @Override
     public boolean[][] cleanLifeGeneration() {
         synchronized (this) {
             for (int x = 0; x < LIFE_SIZE; x++) {
@@ -78,10 +86,12 @@ public class CellState {
         return lifeGeneration;
     }
 
+    @Override
     public boolean isGoNextGeneration() {
         return goNextGeneration;
     }
 
+    @Override
     public int getCountGeneration() {
         return countGeneration;
     }
@@ -124,7 +134,7 @@ public class CellState {
         return count;
     }
 
-    public static synchronized CellState getInstance() {
+    public static synchronized ICellState getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new CellState();
         }
