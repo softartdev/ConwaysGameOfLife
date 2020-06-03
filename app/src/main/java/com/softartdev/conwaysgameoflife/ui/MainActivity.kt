@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
             val mainBinder = service as? MainService.MainBinder ?: return
             mainService = mainBinder.service
             iCellState = mainService.iCellState
+            updateStartButtonText()
             mainService.uiRepaint = this@MainActivity::repaint
             mainService.uiRepaint?.invoke(mainService.iCellState.lifeGeneration)
             bound = true
