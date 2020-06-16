@@ -16,6 +16,7 @@ android {
         targetSdkVersion 29
         versionCode 15
         versionName "1.5"
+        resConfigs 'en'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
