@@ -62,6 +62,6 @@ dependencies {
     debugImplementation "com.squareup.leakcanary:leakcanary-android-process:$leak_canary_version"
     implementation "com.squareup.leakcanary:plumber-android:$leak_canary_version"
     testImplementation 'junit:junit:4.13'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
