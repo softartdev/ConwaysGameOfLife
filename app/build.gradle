@@ -17,6 +17,7 @@ android {
         versionName "1.7"
         resConfigs 'en'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArgument "listener", "leakcanary.FailTestOnLeakRunListener"
     }
     buildFeatures {
         viewBinding true
@@ -67,4 +68,5 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test:rules:1.3.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestImplementation "com.squareup.leakcanary:leakcanary-android-instrumentation:$leak_canary_version"
 }
