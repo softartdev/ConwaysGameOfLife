@@ -13,8 +13,8 @@ android {
         applicationId "com.softartdev.conwaysgameoflife"
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 17
-        versionName "1.7"
+        versionCode 18
+        versionName "1.8"
         resConfigs 'en'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArgument "listener", "leakcanary.FailTestOnLeakRunListener"
