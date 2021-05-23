@@ -12,11 +12,13 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.softartdev.conwaysgameoflife.MainService
 import com.softartdev.conwaysgameoflife.R
+import com.softartdev.conwaysgameoflife.databinding.ActivityMainBinding
 import com.softartdev.conwaysgameoflife.model.ICellState
-import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
 
     private var iCellState: ICellState? = null
     private var bound = false
@@ -43,25 +45,26 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        main_cell_layout.setOnCellClickListener { x, y ->
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.mainCellLayout.setOnCellClickListener { x, y ->
             val inverted = iCellState?.invertLifeGeneration(x, y) ?: return@setOnCellClickListener
             repaint(inverted)
         }
         updateStartButtonText()
-        main_start_button.setOnClickListener {
+        binding.mainStartButton.setOnClickListener {
             iCellState?.toggleGoNextGeneration()
             updateStartButtonText()
         }
-        main_step_button.setOnClickListener {
+        binding.mainStepButton.setOnClickListener {
             val processed = iCellState?.processNextGeneration() ?: return@setOnClickListener
             repaint(processed)
         }
-        main_random_button.setOnClickListener {
+        binding.mainRandomButton.setOnClickListener {
             val randomized = iCellState?.randomizeLifeGeneration() ?: return@setOnClickListener
             repaint(randomized)
         }
-        main_clean_button.setOnClickListener {
+        binding.mainCleanButton.setOnClickListener {
             val cleaned = iCellState?.cleanLifeGeneration() ?: return@setOnClickListener
             repaint(cleaned)
         }
@@ -85,12 +88,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateStartButtonText() {
         val toggle = iCellState?.isGoNextGeneration ?: return
-        main_start_button.text = if (toggle) getString(R.string.stop) else getString(R.string.start)
+        binding.mainStartButton.text = if (toggle) getString(R.string.stop) else getString(R.string.start)
     }
 
     private fun repaint(generation: Array<BooleanArray>) {
-        main_steps_text_view.text = getString(R.string.steps, iCellState?.countGeneration)
-        main_cell_layout.repaint(generation)
+        binding.mainStepsTextView.text = getString(R.string.steps, iCellState?.countGeneration)
+        binding.mainCellLayout.repaint(generation)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
