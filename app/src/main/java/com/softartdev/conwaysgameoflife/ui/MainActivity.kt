@@ -1,11 +1,8 @@
 package com.softartdev.conwaysgameoflife.ui
 
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.IBinder
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
@@ -14,34 +11,18 @@ import com.softartdev.conwaysgameoflife.MainService
 import com.softartdev.conwaysgameoflife.R
 import com.softartdev.conwaysgameoflife.databinding.ActivityMainBinding
 import com.softartdev.conwaysgameoflife.model.ICellState
-import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private var iCellState: ICellState? = null
-    private var bound = false
-
-    private val serviceConnection by lazy { object : ServiceConnection {
-        private lateinit var mainService: MainService
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            Timber.d("onServiceConnected")
-            val mainBinder = service as? MainService.MainBinder ?: return
-            mainService = mainBinder.service
-            iCellState = mainService.iCellState
-            updateStartButtonText()
-            mainService.uiRepaint = this@MainActivity::repaint
-            mainService.uiRepaint?.invoke(mainService.iCellState.lifeGeneration)
-            bound = true
+    private var bound: Boolean
+        get() = MainServiceConnection.bound
+        set(value) {
+            MainServiceConnection.bound = value
         }
-        override fun onServiceDisconnected(name: ComponentName?) {
-            Timber.d("onServiceDisconnected")
-            mainService.uiRepaint = null
-            iCellState = null
-            bound = false
-        }
-    } }
+    private val iCellState: ICellState?
+        get() = MainServiceConnection.iCellState
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,24 +55,26 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         if (!bound) {
-            bindService(Intent(this, MainService::class.java), serviceConnection, Context.BIND_AUTO_CREATE)
+            MainServiceConnection.mainActivity = this
+            bindService(Intent(this, MainService::class.java), MainServiceConnection, Context.BIND_AUTO_CREATE)
         }
     }
 
     override fun onStop() {
         super.onStop()
         if (bound) {
-            unbindService(serviceConnection)
+            MainServiceConnection.mainActivity = null
+            unbindService(MainServiceConnection)
             bound = false
         }
     }
 
-    private fun updateStartButtonText() {
+    fun updateStartButtonText() {
         val toggle = iCellState?.isGoNextGeneration ?: return
         binding.mainStartButton.text = if (toggle) getString(R.string.stop) else getString(R.string.start)
     }
 
-    private fun repaint(generation: Array<BooleanArray>) {
+    fun repaint(generation: Array<BooleanArray>) {
         binding.mainStepsTextView.text = getString(R.string.steps, iCellState?.countGeneration)
         binding.mainCellLayout.repaint(generation)
     }
