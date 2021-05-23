@@ -62,9 +62,15 @@ jobs:
         run: ./.github/scripts/decrypt_secret.sh
         env:
           LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
-      - name: Run UI-tests on emulator
+      - name: Run debug UI-tests on emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
           target: google_apis
-          script: ./gradlew :app:connectedCheck
+          script: ./gradlew :app:connectedCheck -PtestBuildType=debug
+      - name: Run release UI-tests on emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          target: google_apis
+          script: ./gradlew :app:connectedCheck -PtestBuildType=release

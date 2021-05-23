@@ -1,67 +1,51 @@
 package com.softartdev.conwaysgameoflife.ui
 
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.IBinder
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.softartdev.conwaysgameoflife.MainService
 import com.softartdev.conwaysgameoflife.R
+import com.softartdev.conwaysgameoflife.databinding.ActivityMainBinding
 import com.softartdev.conwaysgameoflife.model.ICellState
-import kotlinx.android.synthetic.main.activity_main.*
-import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
-    private var iCellState: ICellState? = null
-    private var bound = false
+    private lateinit var binding: ActivityMainBinding
 
-    private val serviceConnection by lazy { object : ServiceConnection {
-        private lateinit var mainService: MainService
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            Timber.d("onServiceConnected")
-            val mainBinder = service as? MainService.MainBinder ?: return
-            mainService = mainBinder.service
-            iCellState = mainService.iCellState
-            updateStartButtonText()
-            mainService.uiRepaint = this@MainActivity::repaint
-            mainService.uiRepaint?.invoke(mainService.iCellState.lifeGeneration)
-            bound = true
+    private var bound: Boolean
+        get() = MainServiceConnection.bound
+        set(value) {
+            MainServiceConnection.bound = value
         }
-        override fun onServiceDisconnected(name: ComponentName?) {
-            Timber.d("onServiceDisconnected")
-            mainService.uiRepaint = null
-            iCellState = null
-            bound = false
-        }
-    } }
+    private val iCellState: ICellState?
+        get() = MainServiceConnection.iCellState
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        main_cell_layout.setOnCellClickListener { x, y ->
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.mainCellLayout.setOnCellClickListener { x, y ->
             val inverted = iCellState?.invertLifeGeneration(x, y) ?: return@setOnCellClickListener
             repaint(inverted)
         }
         updateStartButtonText()
-        main_start_button.setOnClickListener {
+        binding.mainStartButton.setOnClickListener {
             iCellState?.toggleGoNextGeneration()
             updateStartButtonText()
         }
-        main_step_button.setOnClickListener {
+        binding.mainStepButton.setOnClickListener {
             val processed = iCellState?.processNextGeneration() ?: return@setOnClickListener
             repaint(processed)
         }
-        main_random_button.setOnClickListener {
+        binding.mainRandomButton.setOnClickListener {
             val randomized = iCellState?.randomizeLifeGeneration() ?: return@setOnClickListener
             repaint(randomized)
         }
-        main_clean_button.setOnClickListener {
+        binding.mainCleanButton.setOnClickListener {
             val cleaned = iCellState?.cleanLifeGeneration() ?: return@setOnClickListener
             repaint(cleaned)
         }
@@ -71,26 +55,28 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         if (!bound) {
-            bindService(Intent(this, MainService::class.java), serviceConnection, Context.BIND_AUTO_CREATE)
+            MainServiceConnection.mainActivity = this
+            bindService(Intent(this, MainService::class.java), MainServiceConnection, Context.BIND_AUTO_CREATE)
         }
     }
 
     override fun onStop() {
         super.onStop()
         if (bound) {
-            unbindService(serviceConnection)
+            MainServiceConnection.mainActivity = null
+            unbindService(MainServiceConnection)
             bound = false
         }
     }
 
-    private fun updateStartButtonText() {
+    fun updateStartButtonText() {
         val toggle = iCellState?.isGoNextGeneration ?: return
-        main_start_button.text = if (toggle) getString(R.string.stop) else getString(R.string.start)
+        binding.mainStartButton.text = if (toggle) getString(R.string.stop) else getString(R.string.start)
     }
 
-    private fun repaint(generation: Array<BooleanArray>) {
-        main_steps_text_view.text = getString(R.string.steps, iCellState?.countGeneration)
-        main_cell_layout.repaint(generation)
+    fun repaint(generation: Array<BooleanArray>) {
+        binding.mainStepsTextView.text = getString(R.string.steps, iCellState?.countGeneration)
+        binding.mainCellLayout.repaint(generation)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
