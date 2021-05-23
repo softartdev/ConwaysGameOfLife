@@ -10,11 +10,11 @@ public class CellState implements ICellState {
     public static final int LIFE_SIZE = 10;
     private static final int SHOW_DELAY = 500;
     private Timer timer;
-    private boolean[][] lifeGeneration = new boolean[LIFE_SIZE][LIFE_SIZE];
-    private boolean[][] nextGeneration = new boolean[LIFE_SIZE][LIFE_SIZE];
+    private final boolean[][] lifeGeneration = new boolean[LIFE_SIZE][LIFE_SIZE];
+    private final boolean[][] nextGeneration = new boolean[LIFE_SIZE][LIFE_SIZE];
     private int countGeneration = 0;
     private volatile boolean goNextGeneration = false;
-    private Random random = new Random();
+    private final Random random = new Random();
 
     private CellState() {
     }
