@@ -16,7 +16,6 @@ object MainServiceConnection : ServiceConnection {
             field = value
         }
 
-    var iCellState: ICellState? = null
     var bound = false
 
     private lateinit var mainService: MainService
@@ -24,7 +23,6 @@ object MainServiceConnection : ServiceConnection {
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         val mainBinder = service as? MainService.MainBinder ?: return
         mainService = mainBinder.service
-        iCellState = mainService.iCellState
         mainActivity?.updateStartButtonText()
         mainActivity?.let { mainService.uiRepaint = it::repaint }
         mainService.uiRepaint?.invoke(mainService.iCellState.lifeGeneration)
@@ -33,7 +31,6 @@ object MainServiceConnection : ServiceConnection {
 
     override fun onServiceDisconnected(name: ComponentName?) {
         mainService.uiRepaint = null
-        iCellState = null
         bound = false
     }
 }
