@@ -15,4 +15,5 @@
     <string name="notification_channel_id">conway_channel</string>
     <string name="notification_channel_name">Game notification channel</string>
     <string name="notification_title">Generation in progress</string>
+    <string name="period">Period: %1$d ms</string>
 </resources>

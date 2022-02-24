@@ -74,6 +74,21 @@
 
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/main_period_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+            android:layout_marginVertical="@dimen/activity_vertical_margin"
+            tools:text="@string/period" />
+
+        <SeekBar
+            android:id="@+id/main_seek_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="1000"
+            android:progress="500" />
+
     </LinearLayout>
 
 </ScrollView>

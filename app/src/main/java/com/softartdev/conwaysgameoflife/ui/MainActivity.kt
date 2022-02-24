@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.SeekBar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.softartdev.conwaysgameoflife.MainService
@@ -45,6 +46,14 @@ class MainActivity : AppCompatActivity() {
             val cleaned = iCellState.cleanLifeGeneration() ?: return@setOnClickListener
             repaint(cleaned)
         }
+        binding.mainPeriodTextView.text = getString(R.string.period, binding.mainSeekBar.progress)
+        binding.mainSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                binding.mainPeriodTextView.text = getString(R.string.period, progress)
+            }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) = Unit
+            override fun onStopTrackingTouch(seekBar: SeekBar?) = Unit
+        })
     }
 
     override fun onStart() {
