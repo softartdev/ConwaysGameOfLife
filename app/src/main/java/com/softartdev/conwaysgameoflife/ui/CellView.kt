@@ -8,9 +8,9 @@ import com.softartdev.conwaysgameoflife.R
 
 @SuppressLint("ViewConstructor")
 class CellView(
-        context: Context,
-        val dx: Int,
-        val dy: Int
+    context: Context,
+    val dx: Int,
+    val dy: Int
 ) : View(context) {
 
     var isLive: Boolean = false
