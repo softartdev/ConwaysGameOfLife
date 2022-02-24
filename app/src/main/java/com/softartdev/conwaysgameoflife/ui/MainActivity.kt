@@ -46,10 +46,16 @@ class MainActivity : AppCompatActivity() {
             val cleaned = iCellState.cleanLifeGeneration() ?: return@setOnClickListener
             repaint(cleaned)
         }
+        binding.mainSeekBar.progress = iCellState.period
         binding.mainPeriodTextView.text = getString(R.string.period, binding.mainSeekBar.progress)
         binding.mainSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (progress == 0) {
+                    onProgressChanged(seekBar, 1, fromUser)
+                    return
+                }
                 binding.mainPeriodTextView.text = getString(R.string.period, progress)
+                iCellState.updatePeriod(progress)
             }
             override fun onStartTrackingTouch(seekBar: SeekBar?) = Unit
             override fun onStopTrackingTouch(seekBar: SeekBar?) = Unit

@@ -9,7 +9,9 @@ public class CellState implements ICellState {
     private static ICellState INSTANCE;
     public static final int LIFE_SIZE = 10;
     private static final int SHOW_DELAY = 500;
-    private Timer timer;
+    private volatile int period = SHOW_DELAY;
+    private Timer timer;//FIXME: consider more optimized alternatives for such loop
+    private Runnable runnable;
     private final boolean[][] lifeGeneration = new boolean[LIFE_SIZE][LIFE_SIZE];
     private final boolean[][] nextGeneration = new boolean[LIFE_SIZE][LIFE_SIZE];
     private int countGeneration = 0;
@@ -20,11 +22,30 @@ public class CellState implements ICellState {
     }
 
     @Override
-    public void scheduleTimer(TimerTask timerTask) {
+    public int getPeriod() {
+        return period;
+    }
+
+    @Override
+    public void scheduleTimer(Runnable runnable) {
         if (timer == null) {
             timer = new Timer();
         }
-        timer.schedule(timerTask, 0L, SHOW_DELAY);
+        this.runnable = runnable;
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                CellState.this.runnable.run();
+            }
+        };
+        timer.schedule(timerTask, 0L, period);
+    }
+
+    @Override
+    public void updatePeriod(int period) {
+        cancelTimer();
+        this.period = period;
+        scheduleTimer(this.runnable);
     }
 
     @Override

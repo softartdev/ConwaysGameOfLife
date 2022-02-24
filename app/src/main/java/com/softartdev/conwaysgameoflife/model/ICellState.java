@@ -1,9 +1,9 @@
 package com.softartdev.conwaysgameoflife.model;
 
-import java.util.TimerTask;
-
 public interface ICellState {
-    void scheduleTimer(TimerTask timerTask);
+    int getPeriod();
+    void scheduleTimer(Runnable runnable);
+    void updatePeriod(int period);
     void cancelTimer();
     boolean[][] getLifeGeneration();
     boolean toggleGoNextGeneration();

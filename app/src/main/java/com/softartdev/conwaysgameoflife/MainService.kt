@@ -10,7 +10,6 @@ import com.softartdev.conwaysgameoflife.model.CellState
 import com.softartdev.conwaysgameoflife.model.ICellState
 import com.softartdev.conwaysgameoflife.ui.MainActivity
 import timber.log.Timber
-import java.util.*
 
 
 class MainService : Service() {
@@ -32,10 +31,10 @@ class MainService : Service() {
         super.onCreate()
         Timber.d("onCreate")
         createNotificationChannel(applicationContext, notificationManager)
-        val timerTask: TimerTask = object : TimerTask() {
+        val runnable: Runnable = object : Runnable {
             val uiHandler = Handler(Looper.myLooper()!!)
             override fun run() {
-                Timber.d("Process generation step: %s", iCellState.countGeneration)//TODO run only when game beginning
+                Timber.d("Process generation step: %s", iCellState.countGeneration)//FIXME await on idle
                 if (iCellState.isGoNextGeneration) {
                     val processed = iCellState.processNextGeneration()
                     if (serviceRunningInForeground) {
@@ -47,7 +46,7 @@ class MainService : Service() {
                 } else notificationManager.cancelAll()
             }
         }
-        iCellState.scheduleTimer(timerTask)
+        iCellState.scheduleTimer(runnable)
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
