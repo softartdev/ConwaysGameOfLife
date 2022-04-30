@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "398893620246",
+    "firebase_url": "https://conway-s-game-of-life-459a7.firebaseio.com",
+    "project_id": "conway-s-game-of-life-459a7",
+    "storage_bucket": "conway-s-game-of-life-459a7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:398893620246:android:21a71341372bc643812937",
+        "android_client_info": {
+          "package_name": "com.softartdev.conwaysgameoflife"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "398893620246-7mb1gn3cr6fscvmbdfb8ovi01gei02ck.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.softartdev.conwaysgameoflife",
+            "certificate_hash": "7ab8892bb2e70007a1af2d1c9132d7c2c18d7198"
+          }
+        },
+        {
+          "client_id": "398893620246-nrola6g4b01n0i8j0foj8te5ntopkrnv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4CKSgjs1x9sjST9o8QSpcBbnTI5LGRn4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "398893620246-nrola6g4b01n0i8j0foj8te5ntopkrnv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
