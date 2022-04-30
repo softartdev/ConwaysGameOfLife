@@ -32,4 +32,6 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: output-artifacts
-          path: app/build/outputs/
+          path: |
+            app/build/outputs
+            app/build/reports

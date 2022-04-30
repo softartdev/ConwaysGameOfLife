@@ -31,7 +31,9 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: output-artifacts
-          path: '**/build/'
+          path: |
+            app/build/outputs
+            app/build/reports
   android_ui_test_job:
     name: Android UI-tests on emulator
     needs: build_job
