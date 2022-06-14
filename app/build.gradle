@@ -8,13 +8,13 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
-    compileSdkVersion 31
+    compileSdk 32
     defaultConfig {
         applicationId "com.softartdev.conwaysgameoflife"
         minSdkVersion 16
-        targetSdk 30
+        targetSdk 32
         versionCode 20
-        versionName "2.0"
+        versionName '2.0'
         resConfigs 'en'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArgument "listener", "leakcanary.FailTestOnLeakRunListener"
@@ -56,8 +56,8 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'com.jakewharton.timber:timber:5.0.1'
     implementation platform('com.google.firebase:firebase-bom:28.4.2')
     implementation 'com.google.firebase:firebase-analytics'
