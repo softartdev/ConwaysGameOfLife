@@ -7,21 +7,4 @@ updates:
     time: "00:00"
   open-pull-requests-limit: 10
   ignore:
-  - dependency-name: com.google.firebase:firebase-crashlytics
-    versions:
-    - 17.3.1
-    - 17.4.0
-  - dependency-name: com.google.firebase:firebase-crashlytics-gradle
-    versions:
-    - 2.4.1
-    - 2.5.0
-    - 2.5.1
-  - dependency-name: com.google.firebase:firebase-analytics
-    versions:
-    - 18.0.2
-  - dependency-name: com.android.tools.build:gradle
-    versions:
-    - 4.1.2
-  - dependency-name: com.google.gms:google-services
-    versions:
-    - 4.3.4
+  - dependency-name: com.google.firebase:firebase-bom
