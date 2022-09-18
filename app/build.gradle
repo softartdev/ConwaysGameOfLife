@@ -18,7 +18,7 @@ android {
         versionName '2.0'
         resConfigs 'en'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        testInstrumentationRunnerArguments listener: 'leakcanary.FailTestOnLeakRunListener'
+//        testInstrumentationRunnerArguments listener: 'leakcanary.FailTestOnLeakRunListener'
     }
     buildFeatures {
         viewBinding true
@@ -51,7 +51,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    testBuildType = project.hasProperty("testBuildType") ? project.property("testBuildType") : "release"
+    testBuildType = project.hasProperty("testBuildType") ? project.property("testBuildType") : "debug"
 }
 
 dependencies {
