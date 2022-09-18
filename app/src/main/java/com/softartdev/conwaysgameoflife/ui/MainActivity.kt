@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         }
         updateStartButtonText()
         binding.mainStartButton.setOnClickListener {
-            iCellState.toggleGoNextGeneration()
+            with(iCellState) { if (toggleGoNextGeneration()) cancelTimer() else resumeTimer() }
             updateStartButtonText()
         }
         binding.mainStepButton.setOnClickListener {

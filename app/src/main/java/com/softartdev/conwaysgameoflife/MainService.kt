@@ -46,7 +46,7 @@ class MainService : Service() {
                 } else notificationManager.cancelAll()
             }
         }
-        iCellState.scheduleTimer(runnable)
+        iCellState.setRunnable(runnable)
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {

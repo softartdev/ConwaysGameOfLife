@@ -42,6 +42,11 @@ public class CellState implements ICellState {
     }
 
     @Override
+    public void setRunnable(Runnable runnable) {
+        this.runnable = runnable;
+    }
+
+    @Override
     public void updatePeriod(int period) {
         cancelTimer();
         this.period = period;
@@ -54,6 +59,11 @@ public class CellState implements ICellState {
             timer.cancel();
             timer = null;
         }
+    }
+
+    @Override
+    public void resumeTimer() {
+        scheduleTimer(runnable);
     }
 
     @Override
