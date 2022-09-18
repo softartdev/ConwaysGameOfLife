@@ -10,6 +10,7 @@ keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 android {
     compileSdk 32
     defaultConfig {
+        namespace 'com.softartdev.conwaysgameoflife'
         applicationId "com.softartdev.conwaysgameoflife"
         minSdkVersion 16
         targetSdk 32
@@ -17,7 +18,7 @@ android {
         versionName '2.0'
         resConfigs 'en'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        testInstrumentationRunnerArgument "listener", "leakcanary.FailTestOnLeakRunListener"
+        testInstrumentationRunnerArguments listener: 'leakcanary.FailTestOnLeakRunListener'
     }
     buildFeatures {
         viewBinding true
