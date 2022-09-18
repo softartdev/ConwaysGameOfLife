@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <uses-sdk tools:overrideLibrary="com.google.firebase.firebase_analytics, com.google.firebase.measurement, com.google.android.gms.measurement.api, com.google.android.gms.measurement.sdk, com.google.firebase.measurement_impl, com.google.android.gms.measurement.sdk.api, com.google.android.gms.measurement_base" />
 
@@ -11,7 +12,6 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup">
         <activity
