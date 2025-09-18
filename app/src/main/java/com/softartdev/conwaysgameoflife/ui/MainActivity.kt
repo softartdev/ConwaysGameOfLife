@@ -8,6 +8,11 @@ import android.view.MenuItem
 import android.widget.SeekBar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.ViewGroupCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import com.softartdev.conwaysgameoflife.MainService
 import com.softartdev.conwaysgameoflife.R
 import com.softartdev.conwaysgameoflife.databinding.ActivityMainBinding
@@ -23,8 +28,18 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.enableEdgeToEdge(window)
+        WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = true
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updatePadding(
+                top = systemInsets.top,
+                bottom = systemInsets.bottom
+            )
+            return@setOnApplyWindowInsetsListener insets
+        }
         binding.mainCellLayout.setOnCellClickListener { x, y ->
             val inverted = iCellState.invertLifeGeneration(x, y) ?: return@setOnCellClickListener
             repaint(inverted)
