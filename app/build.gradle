@@ -65,7 +65,7 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:31.5.0')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-crashlytics'
-    def leak_canary_version = '2.10'
+    def leak_canary_version = '2.14'
     debugImplementation "com.squareup.leakcanary:leakcanary-android-process:$leak_canary_version"
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leak_canary_version"
     implementation "com.squareup.leakcanary:plumber-android:$leak_canary_version"
