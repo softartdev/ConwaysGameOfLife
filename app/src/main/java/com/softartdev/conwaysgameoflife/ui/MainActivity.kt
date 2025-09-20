@@ -16,7 +16,6 @@ import com.softartdev.conwaysgameoflife.R
 import com.softartdev.conwaysgameoflife.databinding.ActivityMainBinding
 import com.softartdev.conwaysgameoflife.model.CellState
 import com.softartdev.conwaysgameoflife.model.ICellState
-import com.softartdev.conwaysgameoflife.ui.MainServiceConnection.bound
 
 class MainActivity : AppCompatActivity() {
 
@@ -74,7 +73,7 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         startService(Intent(this, MainService::class.java))
-        if (!bound) {
+        if (!MainServiceConnection.bound) {
             MainServiceConnection.mainActivity = this
             val mainServiceIntent = Intent(this, MainService::class.java)
             bindService(mainServiceIntent, MainServiceConnection, BIND_AUTO_CREATE)
@@ -83,16 +82,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        if (bound) {
+        if (MainServiceConnection.bound) {
             MainServiceConnection.mainActivity = null
             unbindService(MainServiceConnection)
-            bound = false
+            MainServiceConnection.bound = false
         }
     }
 
     fun updateStartButtonText() {
-        binding.mainStartButton.text =
-            if (iCellState.isGoNextGeneration) getString(R.string.stop) else getString(R.string.start)
+        val textResId: Int = if (iCellState.isGoNextGeneration) R.string.stop else R.string.start
+        binding.mainStartButton.text = getString(textResId)
     }
 
     fun repaint(generation: Array<BooleanArray>) {

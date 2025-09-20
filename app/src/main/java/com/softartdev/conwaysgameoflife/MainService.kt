@@ -3,9 +3,11 @@ package com.softartdev.conwaysgameoflife
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.os.*
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.ServiceCompat
 import com.softartdev.conwaysgameoflife.model.CellState
 import com.softartdev.conwaysgameoflife.model.ICellState
 import com.softartdev.conwaysgameoflife.ui.MainActivity
@@ -62,14 +64,14 @@ class MainService : Service() {
 
     override fun onBind(intent: Intent): IBinder {
         Timber.d("onBind")
-        stopForeground(true)
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         serviceRunningInForeground = false
         return mainBinder
     }
 
     override fun onRebind(intent: Intent?) {
         Timber.d("onRebind")
-        stopForeground(true)
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         serviceRunningInForeground = false
     }
 
@@ -77,7 +79,12 @@ class MainService : Service() {
         Timber.d("onUnbind")
         if (iCellState.isGoNextGeneration) {
             val notification = createNotification(applicationContext, iCellState.countGeneration, notificationBuilder)
-            startForeground(NOTIFICATION_ID, notification)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val serviceType: Int = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+                ServiceCompat.startForeground(this, NOTIFICATION_ID, notification, serviceType)
+            } else {
+                startForeground(NOTIFICATION_ID, notification)
+            }
         }
         serviceRunningInForeground = true
         return true
@@ -115,10 +122,7 @@ class MainService : Service() {
         ): NotificationCompat.Builder {
             val channelId = applicationContext.getString(R.string.notification_channel_id)
             val contentIntent = Intent(applicationContext, MainActivity::class.java)
-            var flags = PendingIntent.FLAG_UPDATE_CURRENT
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                flags = PendingIntent.FLAG_IMMUTABLE or flags
-            }
+            val flags: Int = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             val contentPendingIntent = PendingIntent.getActivity(applicationContext, 0, contentIntent, flags)
             val cancelIntent = Intent(applicationContext, MainService::class.java)
                 .putExtra(EXTRA_CANCEL_FROM_NOTIFICATION, true)
