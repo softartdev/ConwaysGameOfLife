@@ -6,13 +6,11 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.SeekBar
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
-import androidx.core.view.ViewGroupCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import com.softartdev.conwaysgameoflife.MainService
 import com.softartdev.conwaysgameoflife.R
 import com.softartdev.conwaysgameoflife.databinding.ActivityMainBinding
@@ -28,16 +26,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        WindowCompat.enableEdgeToEdge(window)
-        WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = true
+        enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-            val systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.updatePadding(
-                top = systemInsets.top,
-                bottom = systemInsets.bottom
-            )
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             return@setOnApplyWindowInsetsListener insets
         }
         binding.mainCellLayout.setOnCellClickListener { x, y ->
@@ -83,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         if (!bound) {
             MainServiceConnection.mainActivity = this
             val mainServiceIntent = Intent(this, MainService::class.java)
-            bindService(mainServiceIntent, MainServiceConnection, Context.BIND_AUTO_CREATE)
+            bindService(mainServiceIntent, MainServiceConnection, BIND_AUTO_CREATE)
         }
     }
 
