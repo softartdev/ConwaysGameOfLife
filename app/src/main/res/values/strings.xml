@@ -16,4 +16,8 @@
     <string name="notification_channel_name">Game notification channel</string>
     <string name="notification_title">Generation in progress</string>
     <string name="period">Period: %1$d ms</string>
+    <string name="notification_permission_title">Notification Permission Required</string>
+    <string name="notification_permission_message">This app needs notification permission to show game progress when you leave the app. You can grant this permission in the app\'s settings.</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="cancel">Cancel</string>
 </resources>

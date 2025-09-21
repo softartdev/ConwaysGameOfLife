@@ -1,19 +1,28 @@
 package com.softartdev.conwaysgameoflife.ui
 
-import android.content.Context
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.SeekBar
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.softartdev.conwaysgameoflife.MainService
 import com.softartdev.conwaysgameoflife.R
 import com.softartdev.conwaysgameoflife.databinding.ActivityMainBinding
 import com.softartdev.conwaysgameoflife.model.CellState
 import com.softartdev.conwaysgameoflife.model.ICellState
-import com.softartdev.conwaysgameoflife.ui.MainServiceConnection.bound
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,16 +32,21 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            return@setOnApplyWindowInsetsListener insets
+        }
         binding.mainCellLayout.setOnCellClickListener { x, y ->
             val inverted = iCellState.invertLifeGeneration(x, y) ?: return@setOnCellClickListener
             repaint(inverted)
         }
         updateStartButtonText()
         binding.mainStartButton.setOnClickListener {
-            with(iCellState) { if (toggleGoNextGeneration()) cancelTimer() else resumeTimer() }
-            updateStartButtonText()
+            if (checkNotificationPermissionGranted(toggle = true)) toggleGame()
         }
         binding.mainStepButton.setOnClickListener {
             val processed = iCellState.processNextGeneration() ?: return@setOnClickListener
@@ -60,30 +74,56 @@ class MainActivity : AppCompatActivity() {
             override fun onStartTrackingTouch(seekBar: SeekBar?) = Unit
             override fun onStopTrackingTouch(seekBar: SeekBar?) = Unit
         })
+        checkNotificationPermissionGranted()
     }
 
     override fun onStart() {
         super.onStart()
         startService(Intent(this, MainService::class.java))
-        if (!bound) {
+        if (!MainServiceConnection.bound) {
             MainServiceConnection.mainActivity = this
             val mainServiceIntent = Intent(this, MainService::class.java)
-            bindService(mainServiceIntent, MainServiceConnection, Context.BIND_AUTO_CREATE)
+            bindService(mainServiceIntent, MainServiceConnection, BIND_AUTO_CREATE)
         }
     }
 
     override fun onStop() {
         super.onStop()
-        if (bound) {
+        if (MainServiceConnection.bound) {
             MainServiceConnection.mainActivity = null
             unbindService(MainServiceConnection)
-            bound = false
+            MainServiceConnection.bound = false
         }
     }
 
+    private fun checkNotificationPermissionGranted(toggle: Boolean = false): Boolean = when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> when {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED -> true
+            ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.POST_NOTIFICATIONS) -> {
+                showNotificationPermissionExplanation()
+                false
+            }
+            else -> {
+                registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+                    when {
+                        isGranted -> if (toggle) toggleGame()
+                        else -> showNotificationPermissionExplanation()
+                    }
+                }.launch(Manifest.permission.POST_NOTIFICATIONS)
+                false
+            }
+        }
+        else -> true
+    }
+
+    private fun toggleGame() {
+        with(iCellState) { if (toggleGoNextGeneration()) cancelTimer() else resumeTimer() }
+        updateStartButtonText()
+    }
+
     fun updateStartButtonText() {
-        binding.mainStartButton.text =
-            if (iCellState.isGoNextGeneration) getString(R.string.stop) else getString(R.string.start)
+        val textResId: Int = if (iCellState.isGoNextGeneration) R.string.stop else R.string.start
+        binding.mainStartButton.text = getString(textResId)
     }
 
     fun repaint(generation: Array<BooleanArray>) {
@@ -97,15 +137,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
-        R.id.action_rules -> {
-            AlertDialog.Builder(this)
-                .setTitle(R.string.rules_title)
-                .setMessage(R.string.rules_text)
-                .setPositiveButton(android.R.string.ok, null)
-                .show()
-            true
-        }
+        R.id.action_rules -> showRules()
         else -> super.onOptionsItemSelected(item)
     }
 
+    private fun showRules(): Boolean = AlertDialog.Builder(this)
+        .setTitle(R.string.rules_title)
+        .setMessage(R.string.rules_text)
+        .setPositiveButton(android.R.string.ok, null)
+        .show() != null
+
+    private fun showNotificationPermissionExplanation(): AlertDialog? = AlertDialog.Builder(this)
+        .setTitle(getString(R.string.notification_permission_title))
+        .setMessage(getString(R.string.notification_permission_message))
+        .setPositiveButton(getString(R.string.open_settings)) { _, _ -> openAppSettings() }
+        .setNegativeButton(getString(R.string.cancel)) { _, _ -> /* Do nothing */ }
+        .show()
+
+    private fun openAppSettings() {
+        val uri = Uri.fromParts("package", packageName, null)
+        val appSettingsIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri)
+        startActivity(appSettingsIntent)
+    }
 }

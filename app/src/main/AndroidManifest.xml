@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <uses-sdk tools:overrideLibrary="com.google.firebase.firebase_analytics, com.google.firebase.measurement, com.google.android.gms.measurement.api, com.google.android.gms.measurement.sdk, com.google.firebase.measurement_impl, com.google.android.gms.measurement.sdk.api, com.google.android.gms.measurement_base" />
@@ -26,6 +27,7 @@
         </activity>
         <service
             android:name=".MainService"
+            android:foregroundServiceType="dataSync"
             android:exported="false" />
     </application>
 
