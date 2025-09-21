@@ -6,5 +6,5 @@
 <p>
   <a href="https://play.google.com/store/apps/details?id=com.softartdev.conwaysgameoflife"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/apps/en-play-badge-border.png" height="75px"/></a>
 </p>
-<img src="https://raw.githubusercontent.com/softartdev/ConwaysGameOfLife/master/demo.gif" height="500" />
+<img src="https://raw.githubusercontent.com/softartdev/ConwaysGameOfLife/dev/misc/demo.gif" height="500" />
 <img src="https://raw.githubusercontent.com/softartdev/ConwaysGameOfLife/master/demo2rotated.gif" height="350" />
