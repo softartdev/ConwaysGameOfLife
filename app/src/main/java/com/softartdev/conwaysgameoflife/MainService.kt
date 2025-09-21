@@ -1,13 +1,24 @@
 package com.softartdev.conwaysgameoflife
 
-import android.app.*
+import android.Manifest
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
-import android.os.*
+import android.os.Binder
+import android.os.Build
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
+import androidx.core.content.ContextCompat
 import com.softartdev.conwaysgameoflife.model.CellState
 import com.softartdev.conwaysgameoflife.model.ICellState
 import com.softartdev.conwaysgameoflife.ui.MainActivity
@@ -40,8 +51,7 @@ class MainService : Service() {
                 if (iCellState.isGoNextGeneration) {
                     val processed = iCellState.processNextGeneration()
                     if (serviceRunningInForeground) {
-                        val notification = createNotification(applicationContext, iCellState.countGeneration, notificationBuilder)
-                        notificationManager.notify(NOTIFICATION_ID, notification)
+                        updateNotificationSafely(applicationContext, iCellState, notificationBuilder, notificationManager)
                     } else {
                         uiHandler.post { uiRepaint?.invoke(processed) }
                     }
@@ -142,11 +152,25 @@ class MainService : Service() {
             applicationContext: Context,
             stepCount: Int,
             notificationBuilder: NotificationCompat.Builder
-        ): Notification {
-            val contentText = applicationContext.getString(R.string.steps, stepCount)
-            return notificationBuilder
-                .setContentText(contentText)
-                .build()
+        ): Notification = notificationBuilder
+            .setContentText(applicationContext.getString(R.string.steps, stepCount))
+            .build()
+
+        private fun updateNotificationSafely(
+            applicationContext: Context,
+            iCellState: ICellState,
+            notificationBuilder: NotificationCompat.Builder,
+            notificationManager: NotificationManagerCompat,
+        ) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                && ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+                Timber.w("No notification permission, cannot update notification")
+                return
+            }
+            val notification = createNotification(applicationContext, iCellState.countGeneration, notificationBuilder)
+            notificationManager.notify(NOTIFICATION_ID, notification)
         }
     }
 }
