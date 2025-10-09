@@ -1,11 +1,11 @@
 package com.softartdev.conwaysgameoflife.model;
 
+import static com.softartdev.conwaysgameoflife.model.CellState.LIFE_SIZE;
+import static org.junit.Assert.assertArrayEquals;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import static com.softartdev.conwaysgameoflife.model.CellState.LIFE_SIZE;
-import static org.junit.Assert.*;
 
 public class CellStateTest {
 

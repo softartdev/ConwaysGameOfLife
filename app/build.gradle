@@ -16,13 +16,14 @@ android {
         applicationId "com.softartdev.conwaysgameoflife"
         minSdkVersion 23
         targetSdkVersion 36
-        versionCode 212
-        versionName '2.1.2'
+        versionCode 213
+        versionName '2.1.3'
         resourceConfigurations += ['en']
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildFeatures {
         viewBinding true
+        buildConfig true
     }
     signingConfigs {
         config {

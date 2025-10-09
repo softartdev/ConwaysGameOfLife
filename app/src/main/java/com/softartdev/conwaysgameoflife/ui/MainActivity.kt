@@ -11,6 +11,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.SeekBar
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -25,10 +26,13 @@ import com.softartdev.conwaysgameoflife.model.CellState
 import com.softartdev.conwaysgameoflife.model.ICellState
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var binding: ActivityMainBinding
-
     private val iCellState: ICellState = CellState.getInstance()
+    private val activityResultLauncher: ActivityResultLauncher<String?> = registerForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+        this@MainActivity::onPermResult
+    )
+    private var toggle: Boolean = false // To start game after permission granted
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +50,8 @@ class MainActivity : AppCompatActivity() {
         }
         updateStartButtonText()
         binding.mainStartButton.setOnClickListener {
-            if (checkNotificationPermissionGranted(toggle = true)) toggleGame()
+            toggle = true
+            if (checkNotificationPermissionGranted()) toggleGame()
         }
         binding.mainStepButton.setOnClickListener {
             val processed = iCellState.processNextGeneration() ?: return@setOnClickListener
@@ -96,7 +101,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkNotificationPermissionGranted(toggle: Boolean = false): Boolean = when {
+    private fun checkNotificationPermissionGranted(): Boolean = when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> when {
             ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED -> true
             ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.POST_NOTIFICATIONS) -> {
@@ -104,16 +109,19 @@ class MainActivity : AppCompatActivity() {
                 false
             }
             else -> {
-                registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-                    when {
-                        isGranted -> if (toggle) toggleGame()
-                        else -> showNotificationPermissionExplanation()
-                    }
-                }.launch(Manifest.permission.POST_NOTIFICATIONS)
+                activityResultLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 false
             }
         }
         else -> true
+    }
+
+    private fun onPermResult(isGranted: Boolean) = when {
+        isGranted -> {
+            if (toggle) toggleGame()
+            toggle = false
+        }
+        else -> showNotificationPermissionExplanation()
     }
 
     private fun toggleGame() {

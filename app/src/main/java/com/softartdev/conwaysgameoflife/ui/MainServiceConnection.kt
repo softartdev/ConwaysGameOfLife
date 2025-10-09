@@ -4,7 +4,6 @@ import android.content.ComponentName
 import android.content.ServiceConnection
 import android.os.IBinder
 import com.softartdev.conwaysgameoflife.MainService
-import com.softartdev.conwaysgameoflife.model.ICellState
 
 object MainServiceConnection : ServiceConnection {
 

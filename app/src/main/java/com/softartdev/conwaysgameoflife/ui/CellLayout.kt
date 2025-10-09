@@ -3,7 +3,6 @@ package com.softartdev.conwaysgameoflife.ui
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import android.view.View.OnClickListener
 import android.widget.GridLayout
 import com.softartdev.conwaysgameoflife.model.CellState.LIFE_SIZE
 
