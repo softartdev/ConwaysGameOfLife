@@ -23,7 +23,6 @@ import com.softartdev.conwaysgameoflife.model.CellState
 import com.softartdev.conwaysgameoflife.model.ICellState
 import com.softartdev.conwaysgameoflife.ui.MainActivity
 import timber.log.Timber
-import java.util.TimerTask
 
 
 class MainService : Service() {
@@ -45,7 +44,7 @@ class MainService : Service() {
         super.onCreate()
         Timber.d("onCreate")
         createNotificationChannel(applicationContext, notificationManager)
-        val timerTask = object : TimerTask() {
+        val runnable = object : Runnable {
             val uiHandler = Handler(Looper.myLooper()!!)
             override fun run() {
                 Timber.d("Process generation step: %s", iCellState.countGeneration)//FIXME await on idle
@@ -59,7 +58,7 @@ class MainService : Service() {
                 } else notificationManager.cancelAll()
             }
         }
-        iCellState.setTimerTask(timerTask)
+        iCellState.setRunnable(runnable)
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {

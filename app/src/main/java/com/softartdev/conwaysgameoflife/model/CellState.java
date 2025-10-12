@@ -11,7 +11,7 @@ public class CellState implements ICellState {
     private static final int SHOW_DELAY = 500;
     private volatile int period = SHOW_DELAY;
     private Timer timer;//FIXME: consider more optimized alternatives for such loop
-    private TimerTask timerTask;
+    private Runnable runnable;
     private final boolean[][] lifeGeneration = new boolean[LIFE_SIZE][LIFE_SIZE];
     private final boolean[][] nextGeneration = new boolean[LIFE_SIZE][LIFE_SIZE];
     private int countGeneration = 0;
@@ -27,16 +27,23 @@ public class CellState implements ICellState {
     }
 
     private void scheduleTimer() {
+        if (runnable == null) return;
         if (timer == null) {
             timer = new Timer();
         }
-        if (timerTask == null) return;
+        // TimerTask can't be reused after cancel
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                runnable.run();
+            }
+        };
         timer.schedule(timerTask, 0L, period);
     }
 
     @Override
-    public void setTimerTask(TimerTask timerTask) {
-        this.timerTask = timerTask;
+    public void setRunnable(Runnable runnable) {
+        this.runnable = runnable;
     }
 
     @Override
