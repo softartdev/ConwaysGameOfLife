@@ -1,7 +1,4 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 
@@ -10,50 +7,49 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
-    compileSdkVersion 36
+    namespace = 'com.softartdev.conwaysgameoflife'
+    compileSdk = 36
     defaultConfig {
-        namespace 'com.softartdev.conwaysgameoflife'
-        applicationId "com.softartdev.conwaysgameoflife"
-        minSdkVersion 23
-        targetSdkVersion 36
-        versionCode 214
-        versionName '2.1.4'
+        applicationId = "com.softartdev.conwaysgameoflife"
+        minSdk = 23
+        targetSdk = 36
+        versionCode = 214
+        versionName = '2.1.4'
         resourceConfigurations += ['en']
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildFeatures {
-        viewBinding true
-        buildConfig true
+        viewBinding = true
+        buildConfig = true
     }
     signingConfigs {
         config {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile file(keystoreProperties['storeFile'])
-            storePassword keystoreProperties['storePassword']
+            keyAlias = keystoreProperties['keyAlias']
+            keyPassword = keystoreProperties['keyPassword']
+            storeFile = file(keystoreProperties['storeFile'])
+            storePassword = keystoreProperties['storePassword']
         }
     }
     buildTypes {
         debug {
             firebaseCrashlytics {
-                mappingFileUploadEnabled false
+                mappingFileUploadEnabled = false
             }
-            minifyEnabled false
-            shrinkResources false
+            minifyEnabled = false
+            shrinkResources = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         release {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled = true
+            shrinkResources = true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.config
+            signingConfig = signingConfigs.config
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlin.compilerOptions.jvmTarget = JvmTarget.JVM_1_8
     testBuildType = project.hasProperty("testBuildType") ? project.property("testBuildType") : "debug"
 }
 
@@ -68,7 +64,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-crashlytics'
     def leak_canary_version = '2.14'
-    debugImplementation "com.squareup.leakcanary:leakcanary-android-process:$leak_canary_version"
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leak_canary_version"
     implementation "com.squareup.leakcanary:plumber-android:$leak_canary_version"
     testImplementation 'junit:junit:4.13.2'
